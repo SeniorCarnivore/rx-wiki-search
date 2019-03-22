@@ -1,50 +1,47 @@
-import React, { Component } from 'react';
+import React, { Component, SFC } from 'react';
 
-import Api from './Api';
+// import Api from './Api';
 
 import './App.css';
+import { createObservableContainer } from './container'
+import { BehaviorSubject } from 'rxjs';
 
-class App extends Component {
-  state = {
-    request: '',
-    data: []
-  }
+interface IAppProps extends React.Component {
+  request?: string,
+  handleChange?: () => void,
+}
 
-  handleChange = (e: React.FormEvent<HTMLInputElement>) =>
-    this.setState({
-      request: e.currentTarget.value
-    });
+const App = (props: IAppProps): JSX.Element => {
+  // const {
+  //   request,
+  //   handleChange,
+  // } = props;
 
-  handleSubmit = () =>
-    Api.
-      fetchData$(this.state.request).
-      subscribe((data: JSON) => this.setState({ data }));
+  return (
+    <div className="App">
+      <header className="App-header">
+        Wiki Search
 
-  renderResults = () =>
-    <ul className="list">
-      { this.state.data.map(el => <li>{ el }</li>) }
-    </ul>
+        <div>
+          <input
+            type="text"
+            // value={ request }
+            // onChange={ handleChange }
+          />
 
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          Wiki Search
-
-          <div>
-            <input
-              type="text"
-              value={ this.state.request }
-              onChange={ this.handleChange }
-            />
-
-            <button onClick={this.handleSubmit}>Search</button>
-          </div>
-          { this.state.data && this.renderResults() }
-        </header>
-      </div>
-    );
-  }
+          {/* <button onClick={handleSubmit}>Search</button> */}
+        </div>
+        {/* { data && renderResults() } */}
+      </header>
+    </div>
+  )
 };
 
-export default App;
+const request$ = new BehaviorSubject({ request: '' });
+
+export default createObservableContainer(
+  request$,
+  {
+    handleChange: (value: string) => request$.next({ request: value }),
+  }
+)(App);
