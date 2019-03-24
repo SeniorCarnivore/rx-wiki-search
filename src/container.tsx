@@ -1,11 +1,20 @@
+/* tslint:disable */
 import React, { SFC } from 'react';
 // import { BehaviorSubject } from 'rxjs';
+import IAppProps from './Types';
 
-export const createObservableContainer = ({}, {}) =>
-  (Component: Function | SFC | JSX.Element | React.Component) => {
-		return class extends React.Component {
+export const createObservableContainer = (props: IAppProps) =>
+	(Element: Function | SFC | JSX.Element | React.Component) => {
+		class Wrapper extends React.Component {
+			constructor() {
+				super(props);
+				console.log(Element)
+			}
+
 			render() {
-				return <Component { ...this.props } { ...this.state } />
+				return <Element { ...this.props } { ...this.state } />
 			}
 		}
+
+		return Wrapper;
 	};

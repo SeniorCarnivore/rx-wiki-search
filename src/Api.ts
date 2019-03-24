@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { Observable, Observer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 
 export default {
 	host: 'http://localhost:3000/',
-	fetchData$(request: string) {
+	fetchData(request: string) {
 		return Observable.create((observer: Observer<JSON>) => {
 			const requestString = `http://en.wikipedia.org/w/api.php?
 									origin=*&
@@ -13,6 +13,7 @@ export default {
 									namespace=0&
 									format=json`;
 
+			console.log(ajax);
 			fetch(requestString)
 				.then(response => response.json())
 				.then(data => {

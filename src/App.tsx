@@ -6,42 +6,43 @@ import './App.css';
 import { createObservableContainer } from './container'
 import { BehaviorSubject } from 'rxjs';
 
-interface IAppProps extends React.Component {
-  request?: string,
-  handleChange?: () => void,
-}
+import IAppProps from './Types';
 
-const App = (props: IAppProps): JSX.Element => {
-  // const {
-  //   request,
-  //   handleChange,
-  // } = props;
+class App extends React.Component {
+  constructor(props: IAppProps) {
+    super(props);
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        Wiki Search
+    const {
+      request$,
+      handleChange,
+    } = props;
+  }
 
-        <div>
-          <input
-            type="text"
-            // value={ request }
-            // onChange={ handleChange }
-          />
-
-          {/* <button onClick={handleSubmit}>Search</button> */}
-        </div>
-        {/* { data && renderResults() } */}
-      </header>
-    </div>
-  )
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          Wiki Search
+  
+          <div>
+            <input
+              type="text"
+              // value={ this.request }
+              // onChange={ this.handleChange }
+            />
+  
+            {/* <button onClick={handleSubmit}>Search</button> */}
+          </div>
+          {/* { data && renderResults() } */}
+        </header>
+      </div>
+    )
+  }
 };
 
 const request$ = new BehaviorSubject({ request: '' });
 
-export default createObservableContainer(
+export default createObservableContainer({
   request$,
-  {
-    handleChange: (value: string) => request$.next({ request: value }),
-  }
-)(App);
+  handleChange: (value: string) => request$.next({ request: value })
+})(App);
