@@ -1,48 +1,57 @@
 import React, { Component, SFC } from 'react';
-
-// import Api from './Api';
+import { requestObs, HandlerFunction } from './Types';
+import Api from './Api';
 
 import './App.css';
-import { createObservableContainer } from './container'
+import { withObservableStream } from './container'
 import { BehaviorSubject } from 'rxjs';
 
-import IAppProps from './Types';
+// @ts-ignore
+const App = (props) => (
+  <div className="App">
+    <header className="App-header">
+      Wiki Search
 
-class App extends React.Component {
-  constructor(props: IAppProps) {
-    super(props);
+      <div>
+        <input
+          type="text"
+          value={ props.request }
+          onChange={ props.handleChange }
+        />
 
-    const {
-      request$,
-      handleChange,
-    } = props;
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          Wiki Search
-  
-          <div>
-            <input
-              type="text"
-              // value={ this.request }
-              // onChange={ this.handleChange }
-            />
-  
-            {/* <button onClick={handleSubmit}>Search</button> */}
-          </div>
-          {/* { data && renderResults() } */}
-        </header>
+        <button onClick={ () => props.handleSubmit(props.request) }>Search</button>
       </div>
-    )
-  }
-};
+      {
+        props.results &&
+        <ul>
+          {
+            props.results.map((el: string) => <li>{ el }</li>)
+          }
+        </ul>
+      }
+    </header>
+  </div>
+);
+
 
 const request$ = new BehaviorSubject({ request: '' });
+const results$ = new BehaviorSubject({ results: [] });
 
-export default createObservableContainer({
+const togglers = {
+  handleChange: (value: string) => request$.next({ request: value }),
+  handleSubmit: (request: string) => Api.
+    // @ts-ignore
+    fetchData(request).
+    subscribe((data: JSON) => console.log(data))
+};
+
+const initialState = {
+  request: '',
+  results: []
+}
+
+export default withObservableStream(
   request$,
-  handleChange: (value: string) => request$.next({ request: value })
-})(App);
+  togglers,
+  initialState
+)(App);

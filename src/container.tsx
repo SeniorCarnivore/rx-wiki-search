@@ -1,18 +1,31 @@
 /* tslint:disable */
 import React, { SFC } from 'react';
-// import { BehaviorSubject } from 'rxjs';
-import IAppProps from './Types';
+import { BehaviorSubject } from 'rxjs';
+import { requestObs } from './Types';
+import { observable, Subscription } from 'rxjs';
 
-export const createObservableContainer = (props: IAppProps) =>
+export const withObservableStream = (request$: requestObs, triggers: {}, initialState: {}) =>
 	(Element: Function | SFC | JSX.Element | React.Component) => {
 		class Wrapper extends React.Component {
-			constructor() {
+			constructor(props: Object) {
 				super(props);
-				console.log(Element)
+
+				this.setState({ initialState })
 			}
 
+			componentDidMout() {
+				// @ts-ignore
+				this.subscription = request$.subscribe(newState => this.setState({ ...newState }))
+			 }
+			 
+			 componentWillUnmount() {
+				// @ts-ignore
+				this.subscription.unsubscribe();
+			  }
+
 			render() {
-				return <Element { ...this.props } { ...this.state } />
+				// @ts-ignore
+				return <Element { ...this.props } { ...this.state } { ...triggers } />
 			}
 		}
 

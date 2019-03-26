@@ -1,6 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
 
-export default interface IAppProps {
-  request$?: BehaviorSubject<{ request: string; }>,
-  handleChange?: (value: string) => void,
-}
+export type requestObs = BehaviorSubject<{ request: string; }>;
+
+export type HandlerFunction = (value: string) => void;
