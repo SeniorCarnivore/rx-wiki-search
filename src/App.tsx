@@ -1,57 +1,86 @@
-import React, { Component, SFC } from 'react';
-import { requestObs, HandlerFunction } from './Types';
+import React from 'react';
 import Api from './Api';
 
 import './App.css';
 import { withObservableStream } from './container'
-import { BehaviorSubject } from 'rxjs';
+import { timer, combineLatest, BehaviorSubject } from 'rxjs';
+import { flatMap, debounce } from 'rxjs/operators';
 
-// @ts-ignore
-const App = (props) => (
-  <div className="App">
+const limits = [ '5', '10', '15' ];
+
+const App = ({
+  // @ts-ignore
+  query,
+  // @ts-ignore
+  handleChange,
+  // @ts-ignore
+  handleLimit,
+  // @ts-ignore
+  results
+}) => {
+  return (<div className="App">
     <header className="App-header">
       Wiki Search
 
       <div>
         <input
+          value={ query }
           type="text"
-          value={ props.request }
-          onChange={ props.handleChange }
+          onChange={e => handleChange(e.target.value)}
         />
-
-        <button onClick={ () => props.handleSubmit(props.request) }>Search</button>
+        
+        <select
+          onChange={e => handleLimit(e.target.value)}>
+          { limits.map(limitVal => <option key={ limitVal } value={ limitVal }>{ limitVal }</option>) }
+        </select>
       </div>
       {
-        props.results &&
+        results &&
         <ul>
           {
-            props.results.map((el: string) => <li>{ el }</li>)
+            results.map((el: string) => <li>{ el }</li>)
           }
         </ul>
       }
     </header>
-  </div>
+  </div>)
+};
+
+const query$ = new BehaviorSubject('test' );
+const limit$ = new BehaviorSubject(limits[0]);
+
+const queryForFetch$ = query$.pipe(
+  debounce(() => timer(1000)),
 );
 
-
-const request$ = new BehaviorSubject({ request: '' });
-const results$ = new BehaviorSubject({ results: [] });
+const results$ = combineLatest(queryForFetch$, limit$).pipe(
+    // @ts-ignore
+    flatMap(([query, limit]) => Api.fetchData(query, limit)),
+);
 
 const togglers = {
-  handleChange: (value: string) => request$.next({ request: value }),
-  handleSubmit: (request: string) => Api.
-    // @ts-ignore
-    fetchData(request).
-    subscribe((data: JSON) => console.log(data))
+  handleChange: (value: string) => query$.next(value ),
+  handleLimit: (value: string) => limit$.next(value),
 };
 
 const initialState = {
-  request: '',
-  results: []
+  query: 'test',
+  limit: limits[0],
+  results: [],
 }
 
 export default withObservableStream(
-  request$,
+  // @ts-ignore
+  combineLatest(
+    limit$,
+    query$,
+    results$, 
+    (limit, query, results) => ({
+      limit,
+      query,
+      results
+    })
+  ),
   togglers,
   initialState
 )(App);
