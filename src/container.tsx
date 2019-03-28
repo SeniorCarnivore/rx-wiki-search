@@ -1,26 +1,29 @@
 /* tslint:disable */
 import React, { SFC } from 'react';
 import { requestObs } from './Types';
+import { Subscription } from 'rxjs';
 
 export const withObservableStream = (observable: requestObs, triggers: {}, initialState: {}) =>
 	(Element: Function) => {
 		class Wrapper extends React.Component {
+			constructor(props: {}, private subscription: Subscription | null) {
+				super(props);
+				this.subscription = null;
+			}
+
 			componentDidMount() {
-				this.setState({ ...initialState })
-				// @ts-ignore
+				this.setState({ ...initialState });
 				this.subscription = observable.subscribe(newState => 
 					this.setState({ ...newState })
 				);
 			}
 			 
 			 componentWillUnmount() {
-				// @ts-ignore
-				this.subscription.unsubscribe();
+				this.subscription && this.subscription.unsubscribe();
 			}
 
 			render() {
-				// @ts-ignore
-				return <Element { ...this.props } { ...this.state } { ...triggers } />
+				return <Element { ...this.props } { ...this.state } { ...triggers } />;
 			}
 		}
 
