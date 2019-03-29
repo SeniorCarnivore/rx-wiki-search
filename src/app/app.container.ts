@@ -3,7 +3,7 @@ import { withObservableStream } from "../utils/withObservableStream";
 import { timer, combineLatest, BehaviorSubject } from "rxjs";
 import { filter, debounce, switchMap } from "rxjs/operators";
 import { App as AppComponent, AppProps } from "./app.component";
-
+import { withRX } from '@devexperts/react-kit/dist/utils/with-rx2';
 const limits = [5, 10, 15];
 
 const query$ = new BehaviorSubject("");
@@ -25,8 +25,9 @@ const defaultProps: AppProps = {
   onLimitChange: (value: number) => limit$.next(value)
 };
 
-export const App = withObservableStream<AppProps, "results">(
+export const App = withRX(AppComponent)(() => ({
   defaultProps,
-  results$,
-  "results"
-)(AppComponent);
+  props: {
+    results: results$
+  }
+}));
