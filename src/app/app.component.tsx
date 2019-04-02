@@ -1,17 +1,20 @@
 import React from "react";
+import { Observable } from "rxjs";
+import { Function1 } from 'fp-ts/lib/function';
+import { RemoteData } from '@devexperts/remote-data-ts';
+
 import "./app.css";
 
 export type AppProps = {
   onQueryChange: (value: string) => void;
   onLimitChange: (value: number) => void;
   limits: number[];
-
-  results: Array<string>;
+  results?: Observable<RemoteData<Error, string[]>> | RemoteData<never, never>;
 };
 
 export const App = (props: AppProps) => {
   const { onQueryChange, onLimitChange, results, limits } = props;
-
+  console.log(props);
   return (
     <div className="App">
       <header className="App-header">
@@ -29,9 +32,9 @@ export const App = (props: AppProps) => {
         </div>
         {results && (
           <ul>
-            {results.map((el: string, i) => (
+            {/* {results.map((el: string, i) => (
               <li key={i}>{el}</li>
-            ))}
+            ))} */}
           </ul>
         )}
       </header>

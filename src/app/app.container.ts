@@ -1,9 +1,15 @@
 import { fetchWikiArticles } from "../api/WikiApi";
-import { withObservableStream } from "../utils/withObservableStream";
 import { timer, combineLatest, BehaviorSubject } from "rxjs";
 import { filter, debounce, switchMap } from "rxjs/operators";
-import { App as AppComponent, AppProps } from "./app.component";
 import { withRX } from '@devexperts/react-kit/dist/utils/with-rx2';
+import { pending } from '@devexperts/remote-data-ts';
+import { mapRD } from '@devexperts/rx-utils/dist/rd/operators/mapRD';
+import { map, tap } from "rxjs/operators";
+
+import { App as AppComponent, AppProps } from "./app.component";
+
+export type WikiResponse = [unknown, unknown, unknown, string[]];
+
 const limits = [5, 10, 15];
 
 const query$ = new BehaviorSubject("");
@@ -20,14 +26,23 @@ const results$ = combineLatest(queryForFetch$, limit$).pipe(
 
 const defaultProps: AppProps = {
   limits,
-  results: [],
+  results: pending,
   onQueryChange: (value: string) => query$.next(value),
   onLimitChange: (value: number) => limit$.next(value)
 };
 
+const props: AppProps = {
+  results: results$.pipe(
+    mapRD(wikiResp => toWikiData(wikiResp))
+  )
+};
+
+function toWikiData(data: string[]) {
+  console.log(data)
+  return data
+}
+
 export const App = withRX(AppComponent)(() => ({
   defaultProps,
-  props: {
-    results: results$
-  }
+  props
 }));
