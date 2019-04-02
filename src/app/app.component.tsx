@@ -1,7 +1,5 @@
 import React from "react";
-import { Observable } from "rxjs";
-import { Function1 } from 'fp-ts/lib/function';
-import { RemoteData } from '@devexperts/remote-data-ts';
+import { RemoteData } from "@devexperts/remote-data-ts";
 
 import "./app.css";
 
@@ -9,7 +7,7 @@ export type AppProps = {
   onQueryChange: (value: string) => void;
   onLimitChange: (value: number) => void;
   limits: number[];
-  results?: Observable<RemoteData<Error, string[]>> | RemoteData<never, never>;
+  results: RemoteData<Error, string[]>;
 };
 
 export const App = (props: AppProps) => {
