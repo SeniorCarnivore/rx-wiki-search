@@ -24,17 +24,15 @@ const results$ = combineLatest(queryForFetch$, limit$).pipe(
   switchMap(([query, limit]) => fetchWikiArticles(query, limit))
 );
 
-const defaultProps: AppProps = {
+const defaultProps = {
   limits,
   results: pending,
   onQueryChange: (value: string) => query$.next(value),
   onLimitChange: (value: number) => limit$.next(value)
 };
 
-const props: AppProps = {
-  results: results$.pipe(
-    mapRD(wikiResp => toWikiData(wikiResp))
-  )
+const props = {
+  results: results$.pipe(mapRD(wikiResp => toWikiData(wikiResp)))
 };
 
 function toWikiData(data: string[]) {
