@@ -1,6 +1,5 @@
 import React, { SFC } from 'react';
 import { RemoteData } from '@devexperts/remote-data-ts';
-import { Observable, of } from 'rxjs';
 import { getRenderRemoteData } from '@devexperts/react-kit/dist/components/render-remote-data/get-render-remote-data';
 
 import './app.css';
