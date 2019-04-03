@@ -1,21 +1,20 @@
-import { WikiResponse } from "./../api/WikiApi";
-import { fetchWikiArticles } from "../api/WikiApi";
-import { timer, combineLatest, BehaviorSubject } from "rxjs";
-import { filter, debounce, switchMap } from "rxjs/operators";
-import { withRX, Observify } from "@devexperts/react-kit/dist/utils/with-rx2";
-import { pending } from "@devexperts/remote-data-ts";
-import { mapRD } from "@devexperts/rx-utils/dist/rd/operators/mapRD";
-// import { map, tap } from "rxjs/operators";
+import { fetchWikiArticles } from '../api/WikiApi';
+import { timer, combineLatest, BehaviorSubject } from 'rxjs';
+import { filter, debounce, switchMap } from 'rxjs/operators';
+import { withRX, Observify } from '@devexperts/react-kit/dist/utils/with-rx2';
+import { pending } from '@devexperts/remote-data-ts';
+import { mapRD } from '@devexperts/rx-utils/dist/rd/operators/mapRD';
+// import { map, tap } from 'rxjs/operators';
 
-import { App as AppComponent, AppProps } from "./app.component";
+import { App as AppComponent, AppProps } from './app.component';
 
 const limits = [5, 10, 15];
 
-const query$ = new BehaviorSubject("");
+const query$ = new BehaviorSubject('');
 const limit$ = new BehaviorSubject(limits[0]);
 
 const queryForFetch$ = query$.pipe(
-  filter(value => value !== ""),
+  filter(value => value !== ''),
   debounce(() => timer(1000))
 );
 
@@ -31,13 +30,10 @@ const defaultProps: Partial<AppProps> = {
 };
 
 const props: Partial<Observify<AppProps>> = {
-  results: results$.pipe(mapRD(wikiResp => toWikiData(wikiResp)))
+  results: results$.pipe(mapRD(wikiResp => wikiResp))
 };
 
-function toWikiData(data: WikiResponse) {
-  console.log(data);
-  return data[3];
-}
+
 
 export const App = withRX(AppComponent)(() => ({
   defaultProps,

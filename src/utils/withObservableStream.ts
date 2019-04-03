@@ -1,5 +1,7 @@
-import { Subscription, Observable } from "rxjs";
-import { ComponentType, Component, createElement } from "react";
+// custom implementation of withRx library. Adds stream to element
+
+import { Subscription, Observable } from 'rxjs';
+import { ComponentType, Component, createElement } from 'react';
 
 export const withObservableStream = <Props, P extends keyof Props>(
   defaultProps: Props,
@@ -32,6 +34,7 @@ export const withObservableStream = <Props, P extends keyof Props>(
         ...this.props,
         [propName]: this.state.value
       };
+
       return createElement(Element, props);
     }
   }
